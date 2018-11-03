@@ -3,6 +3,10 @@ package com.example.opencv.opencv_app2;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -53,14 +57,42 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
     JavaCameraView javacameraview;
+    int indexOfFFCamera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        indexOfFFCamera = 0;
+        try {
+            indexOfFFCamera = Integer.parseInt(getFrontFacingCameraId());
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+        // how to debug: Log.w("App", indexOfFFCamera+""); w - bude to vo warn s tagom prveho argumentu a s hodnotou druheho argumentu
         javacameraview = (JavaCameraView)findViewById(R.id.java_camera_view);
+        javacameraview.setCameraIndex(indexOfFFCamera);
         javacameraview.setVisibility(SurfaceView.VISIBLE);
         javacameraview.setCvCameraViewListener(this);
+    }
+
+    String getFrontFacingCameraId() throws CameraAccessException {
+        CameraManager cManager = (CameraManager) getSystemService(CAMERA_SERVICE);
+        for(final String cameraId : cManager.getCameraIdList()){
+            CameraCharacteristics characteristics = cManager.getCameraCharacteristics(cameraId);
+            int cOrientation;
+            try {
+                cOrientation = characteristics.get(CameraCharacteristics.LENS_FACING);
+            }
+            catch (NullPointerException e){
+                System.out.println("Cant find front facing camera.");
+                return null;
+            }
+            if(cOrientation == CameraCharacteristics.LENS_FACING_FRONT)
+                return cameraId;
+        }
+        return null;
     }
 
     @Override
@@ -115,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         mRgba = inputFrame.rgba();
+        Core.flip(mRgba, mRgba, 5);
 //        Imgproc.cvtColor(mRgba, imgGray, Imgproc.COLOR_RGB2GRAY);
 //        Imgproc.Canny(imgGray, imgCanny, 50, 150);
         return mRgba;
