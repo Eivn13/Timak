@@ -1,6 +1,7 @@
 package com.example.opencv.opencv_app2;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     static {
 
     }
-    Mat mRgba, imgGray, imgCanny, mmat;
+    Mat mRgba, imgGray, imgCanny;
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         indexOfFFCamera = 0;
         try {
             indexOfFFCamera = Integer.parseInt(getFrontFacingCameraId());
@@ -137,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
-        mmat = new Mat(height, width, CvType.CV_8UC4);
         imgGray = new Mat(height, width,  CvType.CV_8UC1);
         imgCanny = new Mat(height, width,  CvType.CV_8UC1);
     }
@@ -226,11 +227,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         int height = original.getHeight();
 
         Matrix matrix = new Matrix();
-        matrix.postRotate(degrees);
+        matrix.setRotate(degrees, 0, 0);
 
-        Bitmap rotatedBitmap = Bitmap.createBitmap(original, 0, 0, width, height, matrix, true);
+        Bitmap rotatedBitmap = null;
+        rotatedBitmap = Bitmap.createBitmap(original, 0, 0, width, height, matrix, true);
         Canvas canvas = new Canvas(rotatedBitmap);
-        canvas.drawBitmap(original, 0, 0, null);
+        canvas.drawBitmap(original, matrix, null);
 
         return rotatedBitmap;
     }

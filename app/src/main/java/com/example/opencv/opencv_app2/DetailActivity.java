@@ -1,5 +1,6 @@
 package com.example.opencv.opencv_app2;
 
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
@@ -24,7 +25,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Bundle extra = new Bundle();
         extra = getIntent().getExtras();
-
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         imageview = (ImageView)findViewById(R.id.imageView);
 
         String photoPath = Environment.getExternalStorageDirectory() + "/frames/" + extra.getString("KEY_FILENAME");
