@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     static {
 
     }
-    Mat mRgba, imgGray, imgCanny;
+    Mat mRgba, imgGray, imgCanny, mmat;
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -53,12 +53,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         }
     };
     JavaCameraView javacameraview;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         javacameraview = (JavaCameraView)findViewById(R.id.java_camera_view);
+        javacameraview.setCameraIndex(1);
         javacameraview.setVisibility(SurfaceView.VISIBLE);
         javacameraview.setCvCameraViewListener(this);
     }
@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mmat = new Mat(height, width, CvType.CV_8UC4);
         imgGray = new Mat(height, width,  CvType.CV_8UC1);
         imgCanny = new Mat(height, width,  CvType.CV_8UC1);
     }
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
         mRgba = inputFrame.rgba();
 //        Imgproc.cvtColor(mRgba, imgGray, Imgproc.COLOR_RGB2GRAY);
 //        Imgproc.Canny(imgGray, imgCanny, 50, 150);
