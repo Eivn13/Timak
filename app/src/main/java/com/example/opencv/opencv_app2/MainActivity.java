@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         {
             tmp_bmp = Bitmap.createBitmap(subImg.cols(), subImg.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(subImg, tmp_bmp);
-            bmp = rotateBitmap(tmp_bmp, 90);
+            bmp = rotateBitmap(tmp_bmp, 270);
         }
         catch (CvException e)
         {
