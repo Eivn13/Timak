@@ -2,6 +2,8 @@ package com.example.opencv.opencv_app2;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     static {
 
     }
-    Mat mRgba, imgGray, imgCanny;
+    Mat mRgba, imgGray, imgCanny, mmat;
     BaseLoaderCallback mLoaderCallBack = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -135,6 +137,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     @Override
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mmat = new Mat(height, width, CvType.CV_8UC4);
         imgGray = new Mat(height, width,  CvType.CV_8UC1);
         imgCanny = new Mat(height, width,  CvType.CV_8UC1);
     }
@@ -146,8 +149,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
         mRgba = inputFrame.rgba();
-        Core.flip(mRgba, mRgba, 5);
 //        Imgproc.cvtColor(mRgba, imgGray, Imgproc.COLOR_RGB2GRAY);
 //        Imgproc.Canny(imgGray, imgCanny, 50, 150);
         return mRgba;
@@ -164,11 +167,12 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     public String saveImage(Mat subImg)
     {
         Bitmap bmp = null;
-
+        Bitmap tmp_bmp = null;
         try
         {
-            bmp = Bitmap.createBitmap(subImg.cols(), subImg.rows(), Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(subImg, bmp);
+            tmp_bmp = Bitmap.createBitmap(subImg.cols(), subImg.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(subImg, tmp_bmp);
+            bmp = rotateBitmap(tmp_bmp, 90);
         }
         catch (CvException e)
         {
@@ -216,5 +220,18 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         }
         return filename_ret;
+    }
+    public Bitmap rotateBitmap(Bitmap original, float degrees) {
+        int width = original.getWidth();
+        int height = original.getHeight();
+
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degrees);
+
+        Bitmap rotatedBitmap = Bitmap.createBitmap(original, 0, 0, width, height, matrix, true);
+        Canvas canvas = new Canvas(rotatedBitmap);
+        canvas.drawBitmap(original, 0, 0, null);
+
+        return rotatedBitmap;
     }
 }

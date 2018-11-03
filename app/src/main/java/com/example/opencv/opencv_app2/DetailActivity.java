@@ -7,7 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 
+import org.opencv.android.Utils;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
+import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class DetailActivity extends AppCompatActivity {
     ImageView imageview;
@@ -30,5 +35,16 @@ public class DetailActivity extends AppCompatActivity {
         bmpInput = BitmapFactory.decodeFile(photoPath, options);
 
         imageview.setImageBitmap(bmpInput);
+    }
+
+    Mat convertBitMap2Mat(Bitmap rgbaImage)
+    {
+        Mat rgbaMat = new Mat(rgbaImage.getHeight(), rgbaImage.getWidth(), CvType.CV_8UC4);
+        Bitmap bmp32 = rgbaImage.copy(Bitmap.Config.ARGB_8888, true);
+        Utils.bitmapToMat(bmp32, rgbaMat);
+
+        Mat rgbMat = new Mat(rgbaImage.getHeight(), rgbaImage.getWidth(), CvType.CV_8UC3);
+        cvtColor(rgbaMat, rgbMat, Imgproc.COLOR_RGB2BGR, 3);
+        return rgbaMat;
     }
 }
