@@ -4,10 +4,6 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
-    defaultConfig {
-        targetSdkVersion 28
-    }
-
     buildTypes {
         release {
             minifyEnabled false
