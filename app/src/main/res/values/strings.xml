@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">FaceBiometry</string>
-    <string name="face_name">Meno</string>
-    <string name="face_add">Add</string>
-    <string name="net_train">Train</string>
-    <string name="net_recognize">Recognize</string>
-</resources>
